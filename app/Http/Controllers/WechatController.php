@@ -3,35 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WechatController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * 处理微信的请求消息
+     *
+     * @return string
+     */
+    public function serve()
     {
-        // 1.获取微信推送过来的post数据(xml格式)
-        $postArr = $GLOBALS['HTTP_RAW_POST_DATA'];
+        Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 
-        // 2. 处理消息类型,并设置回复类型和内容
-        $postObj = simplexml_load_string($postArr);
-        // 3. 判断该数据包是否是订阅事件推送
-        if (strtolower($postObj->MyType) == 'event') {
-            if (strtolower($postObj->Event) == 'subscribe') {
-                $toUser = $postObj->FromUserName;
-                $fromUser = $postObj->ToUserName;
-                $time = time();
-                $msgType = 'text';
-                $content = "欢迎关注我们的公众号";
-                $template = "<xml>
-                                <ToUserName><![CDATA[%s]]></ToUserName>
-                                <FromUserName><![CDATA[%s]]></FromUserName>
-                                <CreateTime>%s</CreateTime>
-                                <MsgType><![CDATA[%s]]></MsgType>
-                                <Event><![CDATA[%s]]></Event>
-                            </xml>";
-                $info = sprintf($template, $toUser, $fromUser, $time, $msgType, $content);
-                return $info;
-            }
-        }
+        $wechat = app('wechat');
+        $wechat->server->setMessageHandler(function($message){
+            return "欢迎关注 overtrue！";
+        });
+
+        Log::info('return response.');
+
+        return $wechat->server->serve();
     }
-
 }
