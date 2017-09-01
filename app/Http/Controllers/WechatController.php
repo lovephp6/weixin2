@@ -6,13 +6,11 @@ use Illuminate\Http\Request;
 
 class WechatController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // 1.获取微信推送过来的post数据(xml格式)
         $postArr = isset($GLOBALS['HTTP_RAW_POST_DATA']) ? $GLOBALS['HTTP_RAW_POST_DATA'] : file_get_contents("php://input");
         // 2. 处理消息类型,并设置回复类型和内容
         $postObj = simplexml_load_string($postArr);
-        dd($postArr);
         // 3. 判断该数据包是否是订阅事件推送
         if (strtolower($postObj->MyType) == 'event') {
             if (strtolower($postObj->Event) == 'subscribe') {
@@ -33,13 +31,5 @@ class WechatController extends Controller
             }
         }
     }
-
-    /**
-     *  接收事件推送并回复
-     */
-    public function responseMsg()
-    {
-
-
-    }
 }
+
