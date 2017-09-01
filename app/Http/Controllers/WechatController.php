@@ -13,7 +13,6 @@ class WechatController extends Controller
         $postObj = simplexml_load_string($postArr);
         // 3. 判断该数据包是否是订阅事件推送
         if (strtolower($postObj->MyType) == 'event') {
-            if (strtolower($postObj->Event) == 'subscribe') {
                 $toUser = $postObj->FromUserName;
                 $fromUser = $postObj->ToUserName;
                 $time = time();
@@ -29,7 +28,6 @@ class WechatController extends Controller
                 $info = sprintf($template, $toUser, $fromUser, $time, $msgType, $content);
                 return $info;
             }
-        }
     }
 }
 
